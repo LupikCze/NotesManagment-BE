@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: NCP-BE-simcakry
+
+  jpa:
+    hibernate:
+      ddl-auto: update
