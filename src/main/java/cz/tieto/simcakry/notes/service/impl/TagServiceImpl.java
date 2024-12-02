@@ -2,6 +2,7 @@ package cz.tieto.simcakry.notes.service.impl;
 
 import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
+import cz.tieto.simcakry.notes.model.dto.tag.TagUpdateDTO;
 import cz.tieto.simcakry.notes.model.entity.Tag;
 import cz.tieto.simcakry.notes.repository.TagRepository;
 import cz.tieto.simcakry.notes.service.TagService;
@@ -37,7 +38,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO update(UUID id, TagDTO tagUpdateDTO) {
+    public TagDTO update(UUID id, TagUpdateDTO tagUpdateDTO) {
         Tag tag = this.getTagById(id);
 
         modelMapper.map(tagUpdateDTO,tag);

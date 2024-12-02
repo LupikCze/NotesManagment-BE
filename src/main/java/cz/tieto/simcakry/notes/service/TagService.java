@@ -1,6 +1,7 @@
 package cz.tieto.simcakry.notes.service;
 
 import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
+import cz.tieto.simcakry.notes.model.dto.tag.TagUpdateDTO;
 import cz.tieto.simcakry.notes.model.entity.Tag;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface TagService {
     List<TagDTO> getAll();
     TagDTO getById(UUID id);
     Tag getTagById(UUID id);
-    TagDTO update(UUID id, TagDTO tagUpdateDTO);
+    TagDTO update(UUID id, TagUpdateDTO tagUpdateDTO);
     TagDTO create(TagDTO newTagDTO);
     String deleteById(UUID id);
     void delete(Tag tagToDelete);
