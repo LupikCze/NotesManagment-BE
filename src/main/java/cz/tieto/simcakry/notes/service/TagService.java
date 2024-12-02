@@ -10,8 +10,8 @@ public interface TagService {
     List<TagDTO> getAll();
     TagDTO getById(UUID id);
     Tag getTagById(UUID id);
-    TagDTO update(UUID id, TagDTO noteTagDTO);
-    TagDTO create(UUID id,TagDTO newTagDTO);
+    TagDTO update(UUID id, TagDTO tagUpdateDTO);
+    TagDTO create(TagDTO newTagDTO);
     String deleteById(UUID id);
     void delete(Tag tagToDelete);
     void deleteAll(Iterable<? extends Tag> tagsToDelete);

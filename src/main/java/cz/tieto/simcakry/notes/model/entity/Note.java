@@ -2,38 +2,45 @@ package cz.tieto.simcakry.notes.model.entity;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "`note`")
 public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @Column(nullable = false)
     private String title;
+
     private String content;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+
     @ManyToMany
     @JoinTable(name = "note_tag",
             joinColumns = @JoinColumn(name = "note_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
-    public Note(String title, String content, User user, Group group, Set<Tag> tags) {
+    public Note(String title, String content, User user, Group group, List<Tag> tags) {
         this.title = title;
         this.content = content;
         this.user = user;
