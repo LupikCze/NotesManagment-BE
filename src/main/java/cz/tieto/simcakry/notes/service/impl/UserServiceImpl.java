@@ -1,5 +1,7 @@
 package cz.tieto.simcakry.notes.service.impl;
 
+import cz.tieto.simcakry.notes.config.PasswordEncoderConfig;
+import cz.tieto.simcakry.notes.exception.EmailExistsException;
 import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.user.UserCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final NoteService noteService;
 
     private final ModelMapper modelMapper;
+    private final PasswordEncoderConfig passwordEncoderConfig;
 
     public List<UserDTO> getAll() {
         return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDTO.class)).toList();
@@ -42,6 +45,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDTO create(UserCreateDTO newUserDTO) {
+        if(userRepository.existsByEmail(newUserDTO.getEmail())) throw new EmailExistsException("User with this email already exists");
+
+        newUserDTO.setPassword(passwordEncoderConfig.encoder().encode(newUserDTO.getPassword()));
+
         User newUser = modelMapper.map(newUserDTO, User.class);
 
         return this.save(newUser);
