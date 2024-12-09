@@ -27,6 +27,10 @@ public class Group {
     @OneToMany(mappedBy = "group",cascade =CascadeType.ALL )
     private List<Note> notes;
 
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @ManyToMany
     @JoinTable(name = "group_tag",
             joinColumns = @JoinColumn(name = "group_id"),

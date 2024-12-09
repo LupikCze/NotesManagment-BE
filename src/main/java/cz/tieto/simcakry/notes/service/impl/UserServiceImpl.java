@@ -1,19 +1,22 @@
 package cz.tieto.simcakry.notes.service.impl;
 
-import cz.tieto.simcakry.notes.config.PasswordEncoderConfig;
-import cz.tieto.simcakry.notes.exception.EmailExistsException;
 import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.user.UserCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
+import cz.tieto.simcakry.notes.model.dto.user.UserRegisterDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserUpdateDTO;
 import cz.tieto.simcakry.notes.model.entity.Tag;
 import cz.tieto.simcakry.notes.model.entity.User;
 import cz.tieto.simcakry.notes.repository.UserRepository;
-import cz.tieto.simcakry.notes.service.NoteService;
+import cz.tieto.simcakry.notes.security.JwtTokenUtil;
+import cz.tieto.simcakry.notes.security.service.AuthService;
 import cz.tieto.simcakry.notes.service.TagService;
 import cz.tieto.simcakry.notes.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +28,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final TagService tagService;
-    private final NoteService noteService;
 
     private final ModelMapper modelMapper;
-    private final PasswordEncoderConfig passwordEncoderConfig;
+    private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+
+    public UserDTO getUserByEmail(String email){
+        return modelMapper.map(userRepository.findByEmail(email),UserDTO.class);
+    }
 
     public List<UserDTO> getAll() {
         return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDTO.class)).toList();
@@ -45,11 +54,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDTO create(UserCreateDTO newUserDTO) {
-        if(userRepository.existsByEmail(newUserDTO.getEmail())) throw new EmailExistsException("User with this email already exists");
-
-        newUserDTO.setPassword(passwordEncoderConfig.encoder().encode(newUserDTO.getPassword()));
-
         User newUser = modelMapper.map(newUserDTO, User.class);
+        UserRegisterDTO userRegister = authService.register(newUser.getEmail(),newUser.getPassword());
+
+        newUser.setEmail(userRegister.getEmail());
+        newUser.setPassword(userRegister.getPassword());
 
         return this.save(newUser);
     }
@@ -108,5 +117,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO save(User userToSave) {
         return modelMapper.map(userRepository.save(userToSave),UserDTO.class);
+    }
+
+    @Override
+    public String authenticateUser(String email, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
+        return jwtTokenUtil.generateAccessToken(userDetailsService.loadUserByUsername(email));
+
     }
 }

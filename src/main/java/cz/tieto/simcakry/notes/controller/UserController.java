@@ -1,8 +1,10 @@
 package cz.tieto.simcakry.notes.controller;
 
+import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.user.UserCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserUpdateDTO;
+import cz.tieto.simcakry.notes.security.service.AuthService;
 import cz.tieto.simcakry.notes.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +27,30 @@ import java.util.UUID;
 @Tag(name = "User", description = "Endpoints for user management")
 public class UserController {
     private final UserService userService;
+    private AuthService authService;
+
+    @Operation(
+            summary = "Get currently logged in user",
+            description = "Get currently logged in user",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Current user",
+                            useReturnTypeSchema = true
+                    )
+            }
+    )
+    @GetMapping("/current-user")
+    public UserDTO getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            return userService.getUserByEmail(email);
+        } else {
+            throw new NotFoundException("User not found");
+        }
+    }
 
     @Operation(
             summary = "Get all users",

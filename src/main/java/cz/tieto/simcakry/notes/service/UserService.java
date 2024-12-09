@@ -21,4 +21,6 @@ public interface UserService {
     void delete(User userToDelete);
     void deleteAll(Iterable<? extends User> usersToDelete);
     UserDTO save(User userToSave);
+    UserDTO getUserByEmail(String email);
+    String authenticateUser(String email,String password);
 }

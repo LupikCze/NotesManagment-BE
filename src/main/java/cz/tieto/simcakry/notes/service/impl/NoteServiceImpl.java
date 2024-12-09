@@ -107,6 +107,6 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public NoteDTO save(Note noteToSave) {
-        return modelMapper.map(noteToSave,NoteDTO.class);
+        return modelMapper.map(noteRepository.save(noteToSave),NoteDTO.class);
     }
 }
