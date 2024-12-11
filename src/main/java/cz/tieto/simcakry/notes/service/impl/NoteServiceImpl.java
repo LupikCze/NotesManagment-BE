@@ -4,6 +4,7 @@ import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.note.NoteCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.dto.note.NoteUpdateDTO;
+import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
 import cz.tieto.simcakry.notes.model.entity.Note;
 import cz.tieto.simcakry.notes.model.entity.Tag;
 import cz.tieto.simcakry.notes.repository.NoteRepository;
@@ -108,5 +109,11 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public NoteDTO save(Note noteToSave) {
         return modelMapper.map(noteRepository.save(noteToSave),NoteDTO.class);
+    }
+
+    @Override
+    public List<NoteDTO> getUnused(){
+        List<NoteDTO> notes = getAll();
+        return notes.stream().filter((note)->note.getUser()==null ).toList();
     }
 }

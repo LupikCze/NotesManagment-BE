@@ -3,6 +3,7 @@ package cz.tieto.simcakry.notes.controller;
 import cz.tieto.simcakry.notes.model.dto.group.GroupCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.group.GroupDTO;
 import cz.tieto.simcakry.notes.model.dto.group.GroupUpdateDTO;
+import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserUpdateDTO;
@@ -25,6 +26,22 @@ import java.util.UUID;
 @Tag(name = "Group", description = "Endpoints for group management")
 public class GroupController {
     private final GroupService groupService;
+
+    @Operation(
+            summary = "Get unused groups",
+            description = "Get unused groups, if no groups are found returns empty list",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of unused groups",
+                            useReturnTypeSchema = true
+                    )
+            }
+    )
+    @GetMapping("/unused")
+    public List<GroupDTO> getUnusedGroups() {
+        return groupService.getUnused();
+    }
 
     @Operation(
             summary = "Get all groups",

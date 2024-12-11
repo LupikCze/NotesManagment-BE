@@ -2,6 +2,7 @@ package cz.tieto.simcakry.notes.model.dto.group;
 
 import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
+import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class GroupDTO {
     private UUID id;
     private String title;
+    private UserDTO user;
     private List<NoteDTO> notes;
     private List<TagDTO> tags;
 }

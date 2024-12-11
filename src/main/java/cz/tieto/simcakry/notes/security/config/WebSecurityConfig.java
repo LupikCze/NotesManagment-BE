@@ -41,7 +41,7 @@ public class WebSecurityConfig {
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((requests) -> {
             requests
-                    .requestMatchers(HttpMethod.POST, "/v1/users").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/users/register").permitAll()
                     .requestMatchers(HttpMethod.POST, "/v1/users/authenticate").permitAll()
                     .requestMatchers(HttpMethod.GET,"/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.GET,"/v1/**").hasAnyRole(Role.ADMIN.toString(),Role.USER.toString())

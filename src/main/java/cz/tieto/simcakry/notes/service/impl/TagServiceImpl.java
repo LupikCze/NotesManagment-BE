@@ -26,6 +26,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public List<TagDTO> getUnused(){
+        List<TagDTO> tags = getAll();
+        return tags.stream().filter((tag)->tag.getUser()==null).toList();
+    }
+
+    @Override
     public TagDTO getById(UUID id) {
         Tag tag = this.getTagById(id);
 

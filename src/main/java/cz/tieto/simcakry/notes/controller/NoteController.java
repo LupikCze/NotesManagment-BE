@@ -3,6 +3,7 @@ package cz.tieto.simcakry.notes.controller;
 import cz.tieto.simcakry.notes.model.dto.note.NoteCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.dto.note.NoteUpdateDTO;
+import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
 import cz.tieto.simcakry.notes.service.NoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -85,6 +86,22 @@ public class NoteController {
     @PostMapping
     public NoteDTO createNote(@RequestBody @Valid NoteCreateDTO newNoteDTO) {
         return noteService.create(newNoteDTO);
+    }
+
+    @Operation(
+            summary = "Get unused notes",
+            description = "Get unused notes, if no notes are found returns empty list",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of unused notes",
+                            useReturnTypeSchema = true
+                    )
+            }
+    )
+    @GetMapping("/unused")
+    public List<NoteDTO> getUnusedNotes() {
+        return noteService.getUnused();
     }
 
     @Operation(

@@ -1,26 +1,35 @@
 package cz.tieto.simcakry.notes.service.impl;
 
 import cz.tieto.simcakry.notes.exception.NotFoundException;
-import cz.tieto.simcakry.notes.model.dto.user.UserCreateDTO;
-import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
-import cz.tieto.simcakry.notes.model.dto.user.UserRegisterDTO;
-import cz.tieto.simcakry.notes.model.dto.user.UserUpdateDTO;
+import cz.tieto.simcakry.notes.model.dto.group.GroupDTO;
+import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
+import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
+import cz.tieto.simcakry.notes.model.dto.user.*;
+import cz.tieto.simcakry.notes.model.entity.Group;
+import cz.tieto.simcakry.notes.model.entity.Note;
 import cz.tieto.simcakry.notes.model.entity.Tag;
 import cz.tieto.simcakry.notes.model.entity.User;
 import cz.tieto.simcakry.notes.repository.UserRepository;
 import cz.tieto.simcakry.notes.security.JwtTokenUtil;
 import cz.tieto.simcakry.notes.security.service.AuthService;
+import cz.tieto.simcakry.notes.service.GroupService;
+import cz.tieto.simcakry.notes.service.NoteService;
 import cz.tieto.simcakry.notes.service.TagService;
 import cz.tieto.simcakry.notes.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final TagService tagService;
+    private final NoteService noteService;
+    private final GroupService groupService;
 
     private final ModelMapper modelMapper;
     private final AuthService authService;
@@ -51,6 +62,32 @@ public class UserServiceImpl implements UserService {
 
     public User getUserById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+    }
+
+
+    public UserWithAll getUserWithAllById(UUID id) {
+        UserDTO userDTO = this.getById(id);
+        User user =this.getUserById(id);
+
+        UserWithAll userWithAll = modelMapper.map(userDTO, UserWithAll.class);
+
+        userWithAll.setGroups(
+                user.getGroups().stream()
+                        .map(group -> modelMapper.map(group, GroupDTO.class))
+                        .collect(Collectors.toList())
+        );
+        userWithAll.setNotes(
+                user.getNotes().stream()
+                        .map(note -> modelMapper.map(note, NoteDTO.class))
+                        .collect(Collectors.toList())
+        );
+        userWithAll.setTags(
+                user.getTags().stream()
+                        .map(tag -> modelMapper.map(tag, TagDTO.class))
+                        .collect(Collectors.toList())
+        );
+
+        return userWithAll;
     }
 
     public UserDTO create(UserCreateDTO newUserDTO) {
@@ -103,6 +140,58 @@ public class UserServiceImpl implements UserService {
         tagService.save(tag);
 
         return "Tag with id: " + tagId + " removed from user with id: " + userId;
+    }
+
+    public String addNoteToUser(UUID userId, UUID noteId) {
+        User user = this.getUserById(userId);
+        Note note = noteService.getNoteById(noteId);
+
+        note.setUser(user);
+        user.getNotes().add(note);
+
+        this.save(user);
+        noteService.save(note);
+
+        return "Note with id: " + noteId + " added to user with id: " + userId;
+    }
+
+    public String removeNoteFromUser(UUID userId, UUID noteId) {
+        User user = this.getUserById(userId);
+        Note note = noteService.getNoteById(noteId);
+
+        note.setUser(null);
+        user.getNotes().remove(note);
+
+        this.save(user);
+        noteService.save(note);
+
+        return "Note with id: " + noteId + " removed from user with id: " + userId;
+    }
+
+    public String addGroupToUser(UUID userId, UUID groupId) {
+        User user = this.getUserById(userId);
+        Group group = groupService.getGroupById(groupId);
+
+        group.setUser(user);
+        user.getGroups().add(group);
+
+        this.save(user);
+        groupService.save(group);
+
+        return "Group with id: " + groupId + " added to user with id: " + userId;
+    }
+
+    public String removeGroupFromUser(UUID userId, UUID groupId) {
+        User user = this.getUserById(userId);
+        Group group = groupService.getGroupById(groupId);
+
+        group.setUser(null);
+        user.getGroups().remove(group);
+
+        this.save(user);
+        groupService.save(group);
+
+        return "Group with id: " + groupId + " removed from user with id: " + userId;
     }
 
     public void delete(User userToDelete) {

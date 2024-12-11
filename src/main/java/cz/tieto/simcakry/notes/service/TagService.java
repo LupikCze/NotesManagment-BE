@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public interface TagService {
     List<TagDTO> getAll();
+    List<TagDTO> getUnused();
     TagDTO getById(UUID id);
     Tag getTagById(UUID id);
     TagDTO update(UUID id, TagUpdateDTO tagUpdateDTO);

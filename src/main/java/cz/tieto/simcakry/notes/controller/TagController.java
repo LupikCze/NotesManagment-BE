@@ -39,6 +39,22 @@ public class TagController {
     }
 
     @Operation(
+            summary = "Get unused tags",
+            description = "Get unused tags, if no tags are found returns empty list",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of unused tags",
+                            useReturnTypeSchema = true
+                    )
+            }
+    )
+    @GetMapping("/unused")
+    public List<TagDTO> getUnusedTags() {
+        return tagService.getUnused();
+    }
+
+    @Operation(
             summary = "Get tag by id",
             description = "Get tag by id",
             responses = {

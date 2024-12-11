@@ -1,5 +1,7 @@
 package cz.tieto.simcakry.notes.model.dto.tag;
 
+import cz.tieto.simcakry.notes.model.dto.group.GroupDTO;
+import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

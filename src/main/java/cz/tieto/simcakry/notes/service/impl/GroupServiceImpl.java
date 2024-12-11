@@ -4,6 +4,7 @@ import cz.tieto.simcakry.notes.exception.NotFoundException;
 import cz.tieto.simcakry.notes.model.dto.group.GroupCreateDTO;
 import cz.tieto.simcakry.notes.model.dto.group.GroupDTO;
 import cz.tieto.simcakry.notes.model.dto.group.GroupUpdateDTO;
+import cz.tieto.simcakry.notes.model.dto.note.NoteDTO;
 import cz.tieto.simcakry.notes.model.entity.Group;
 import cz.tieto.simcakry.notes.model.entity.Note;
 import cz.tieto.simcakry.notes.model.entity.Tag;
@@ -139,5 +140,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupDTO save(Group groupToSave) {
         return modelMapper.map(groupRepository.save(groupToSave),GroupDTO.class);
+    }
+
+    @Override
+    public List<GroupDTO> getUnused(){
+        List<GroupDTO> groups = getAll();
+        return groups.stream().filter((group)->group.getUser()==null ).toList();
     }
 }

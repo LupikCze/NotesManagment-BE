@@ -1,6 +1,8 @@
 package cz.tieto.simcakry.notes.model.dto.note;
 
+import cz.tieto.simcakry.notes.model.dto.group.GroupDTO;
 import cz.tieto.simcakry.notes.model.dto.tag.TagDTO;
+import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +20,5 @@ public class NoteDTO {
     private String title;
     private String content;
     private List<TagDTO> tags;
+    private UserDTO user;
 }
