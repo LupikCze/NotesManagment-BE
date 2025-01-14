@@ -40,7 +40,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getTagById(UUID id) {
-        return tagRepository.findById(id).orElseThrow(()-> new NotFoundException("Tag with id:"+id+" note found"));
+        return tagRepository.findById(id).orElseThrow(()-> new NotFoundException("Tag with id:"+id+" not found"));
     }
 
     @Override

@@ -3,6 +3,7 @@ package cz.tieto.simcakry.notes.security.service.impl;
 
 import cz.tieto.simcakry.notes.config.PasswordEncoderConfig;
 import cz.tieto.simcakry.notes.exception.EmailExistsException;
+import cz.tieto.simcakry.notes.exception.ShortPasswordException;
 import cz.tieto.simcakry.notes.model.dto.user.UserDTO;
 import cz.tieto.simcakry.notes.model.dto.user.UserRegisterDTO;
 import cz.tieto.simcakry.notes.model.enums.Role;
@@ -40,7 +41,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public UserRegisterDTO register(String email,String password){
-        if(userRepository.existsByEmail(email)) throw new EmailExistsException("User with this email already exists");
+        if(userRepository.existsByEmail(email)) throw new EmailExistsException();
+        if(password.length() < 7) throw new ShortPasswordException();
         String passwordHash = passwordEncoderConfig.encoder().encode(password);
 
         return new UserRegisterDTO(email,passwordHash);

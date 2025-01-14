@@ -30,7 +30,7 @@ public class JwtAccessFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if(request.getRequestURL().toString().equals("/v1/users/authenticate")){
+        if(request.getRequestURL().toString().endsWith("/v1/users/authenticate")){
             filterChain.doFilter(request, response);
             return;
         }
